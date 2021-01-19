@@ -15,6 +15,8 @@ class LoadFeature(object):
         self.image_sub = rospy.Subscriber("/camera/rgb/image_raw",Image,self.camera_callback)
         self.bridge_object = CvBridge()
         self.x = 4
+        self.i=0
+        
 
     def camera_callback(self,data):
         try:
@@ -22,14 +24,21 @@ class LoadFeature(object):
             cv_image = self.bridge_object.imgmsg_to_cv2(data, desired_encoding="bgr8")
         except CvBridgeError as e:
             print(e)
-        
-        #Publie un geometry_msgs/PoseWithCovarianceStamps pose.pose.position
-        pub = rospy.Publisher('bottle', Bool, queue_size=10)
-        image_1 = cv2.imread('/home/user/catkin_ws/src/student_package/src/scripts/coke_can.jpg',1)
+        self.i=self.i+1
+        #pub = rospy.Publisher('bottle', Bool, queue_size=10)
         image_2 = cv_image
+        image_1 = cv2.imread('/home/user/catkin_ws/src/student_package/scripts/coke_can5.png')
+        """cv2.imshow("im", image_1)
+        cv2.waitKey(1)
 
-        gray_1 = cv2.cvtColor(image_1, cv2.COLOR_RGB2GRAY)
-        gray_2 = cv2.cvtColor(image_2, cv2.COLOR_RGB2GRAY)
+        if self.i==10:
+            cv2.imshow("im", image_2)
+            cv2.imwrite("coke_can5.png",image_2)
+            cv2.waitKey(1)
+        """
+        
+        gray_1 = cv2.cvtColor(image_1, cv2.COLOR_BGR2GRAY)
+        gray_2 = cv2.cvtColor(image_2, cv2.COLOR_BGR2GRAY)
 
         #Initialize the ORB Feature detector 
         orb = cv2.ORB_create(nfeatures = 1000)
@@ -43,7 +52,7 @@ class LoadFeature(object):
         dots = np.copy(image_1)
 
         #Extract the keypoints from both images
-        train_keypoints, train_descriptor = orb.detectAndCompute(gray_1, None)
+        train_keypoints, train_descriptor = orb.detectAndCompute(gray_1[12:120,13:10], None)
         test_keypoints, test_descriptor = orb.detectAndCompute(gray_2, None)
 
         #Draw the found Keypoints of the main image
@@ -90,7 +99,7 @@ class LoadFeature(object):
             # Draw the points of the new perspective in the result image (This is considered the bounding box)
             result = cv2.polylines(image_2, [np.int32(dst)], True, (50,0,255),3, cv2.LINE_AA)
 
-            pub.publish(PoseWithCovarianceStamps)
+            #pub.publish(True)
 
         cv2.imshow('Points',preview_1)
         cv2.imshow('Detection',image_2)       
