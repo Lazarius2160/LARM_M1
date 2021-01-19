@@ -90,7 +90,7 @@ class LoadFeature(object):
             # Draw the points of the new perspective in the result image (This is considered the bounding box)
             result = cv2.polylines(image_2, [np.int32(dst)], True, (50,0,255),3, cv2.LINE_AA)
 
-            pub.publish(PoseWithCovarianceStamps)
+            pub.publish(True)
 
         cv2.imshow('Points',preview_1)
         cv2.imshow('Detection',image_2)       
