@@ -1,0 +1,10 @@
+<launch>
+
+​<node name="map_server" pkg="map_server" type="map_server" args="$(find student_package)/maps/mapchallenge1.yaml"/>
+<node pkg="amcl" type="amcl" name="amcl" output="screen">
+​
+  <remap from="scan" to="/scan" />
+  <remap from="cmd_vel" to="/summit_xl_controller/cmd_vel"/>
+  </node>
+​
+</launch>
