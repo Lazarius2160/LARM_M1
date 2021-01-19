@@ -34,7 +34,8 @@ class LoadFeature(object):
         self.i=self.i+1
         #pub = rospy.Publisher('bottle', Bool, queue_size=10)
         image_2 = cv_image
-        image_1 = cv2.imread('/home/user/catkin_ws/src/student_package/scripts/coke_can5.png')
+        image_1 = cv2.imread('/home/user/catkin_ws/src/student_package/scripts/coke_can6.png')
+
         """cv2.imshow("im", image_1)
         cv2.waitKey(1)
 
