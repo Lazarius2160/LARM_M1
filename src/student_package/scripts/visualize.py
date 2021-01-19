@@ -2,11 +2,12 @@
 import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
-import cv2 
+import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from std_msgs.msg import Float32
 from std_msgs.msg import Bool
+from geometry_msgs import PoseWithCovarianceStamps
 
 class LoadFeature(object):
 
@@ -22,7 +23,8 @@ class LoadFeature(object):
         except CvBridgeError as e:
             print(e)
         
-        pub = rospy.Publisher('bottle', Bool, queue_size=10)
+        #Publie un geometry_msgs/PoseWithCovarianceStamps pose.pose.position
+        pub = rospy.Publisher('bottle', PoseWithCovarianceStamps, queue_size=10)
         image_1 = cv2.imread('/home/user/catkin_ws/src/student_package/src/scripts/coke_can.jpg',1)
         image_2 = cv_image
 
@@ -88,7 +90,7 @@ class LoadFeature(object):
             # Draw the points of the new perspective in the result image (This is considered the bounding box)
             result = cv2.polylines(image_2, [np.int32(dst)], True, (50,0,255),3, cv2.LINE_AA)
 
-            pub.publish(True)
+            pub.publish(PoseWithCovarianceStamps)
 
         cv2.imshow('Points',preview_1)
         cv2.imshow('Detection',image_2)       
