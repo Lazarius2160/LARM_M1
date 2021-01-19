@@ -14,6 +14,9 @@ rospy.init_node('position_subscriber')
 #Souscrit au topic amcl_pose pour avoir la position du robot quand on a une bouteille
 sub = rospy.Subscriber('amcl_pose',PoseWithCovarianceStamps,callback)
 
+#Doit ajouter à ça la distance du robot avec la canette
+/camera/depth/image_raw
+
 #Publie dans bottle la position du robot
 pub = rospy.Publisher('bottle', PoseWithCovarianceStamps, queue_size=10)
 rate = rospy.Rate(10) # 10hz
