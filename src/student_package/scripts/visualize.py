@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from std_msgs.msg import Float32
 from std_msgs.msg import Bool
+from geometry_msgs import PoseWithCovarianceStamps
 
 class LoadFeature(object):
 
