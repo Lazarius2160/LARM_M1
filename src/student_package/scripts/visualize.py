@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from std_msgs.msg import Float32
 from std_msgs.msg import Bool
-#from geometry_msgs import PoseWithCovarianceStamps
+from geometry_msgs.msg import PoseWithCovarianceStamped
 
 class LoadFeature(object):
 
@@ -16,9 +16,16 @@ class LoadFeature(object):
         self.bridge_object = CvBridge()
         self.x = 4
         self.i=0
-        
+
 
     def camera_callback(self,data):
+     
+        #Defining a call back function for the Subcriber.
+        def callback(msg):
+            bouteille = PoseWithCovarianceStamped()
+            bouteille.pose.pose.position.x = msg.pose.pose.position.x
+            pub.publish(bouteille)
+
         try:
             # We select bgr8 because its the OpenCV encoding by default
             cv_image = self.bridge_object.imgmsg_to_cv2(data, desired_encoding="bgr8")
@@ -52,7 +59,7 @@ class LoadFeature(object):
         dots = np.copy(image_1)
 
         #Extract the keypoints from both images
-        train_keypoints, train_descriptor = orb.detectAndCompute(gray_1[12:120,13:10], None)
+        train_keypoints, train_descriptor = orb.detectAndCompute(gray_1, None)
         test_keypoints, test_descriptor = orb.detectAndCompute(gray_2, None)
 
         #Draw the found Keypoints of the main image
@@ -98,21 +105,26 @@ class LoadFeature(object):
 
             # Draw the points of the new perspective in the result image (This is considered the bounding box)
             result = cv2.polylines(image_2, [np.int32(dst)], True, (50,0,255),3, cv2.LINE_AA)
+                   
+            #Souscrit au topic amcl_pose pour avoir la position du robot quand on a une bouteille
+            subRobot = rospy.Subscriber('amcl_pose', PoseWithCovarianceStamped,callback)
 
-<<<<<<< HEAD
-            pub.publish(True)
-=======
-            #pub.publish(True)
->>>>>>> 1b8088fc04f9353ef27befce9863716dc50868c2
+            #Publie dans bottle la position du robot
+            pub = rospy.Publisher('bottle', PoseWithCovarianceStamped, queue_size=10)
+
+            #subCamera = rospy.Subscriber("/camera/depth/image_raw",Image,self.camera_callback2)
 
         cv2.imshow('Points',preview_1)
         cv2.imshow('Detection',image_2)       
         cv2.waitKey(1)
+ 
 
     
 def main():
+
     load_feature_object = LoadFeature()
     rospy.init_node('load_feature_node', anonymous=True)
+
     rate = rospy.Rate(10) # 10hz
     try:
         rospy.spin()

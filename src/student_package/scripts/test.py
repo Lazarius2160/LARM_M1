@@ -1,24 +1,25 @@
 import rospy
-from geometry_msgs.msgs import PoseWithCovarianceStamps
+from geometry_msgs.msgs import PoseWithCovarianceStamped
           
 
-bouteille = new PoseWithCovarianceStamps() #syntaxe ???
+bouteille = PoseWithCovarianceStamped() #syntaxe ???
 
 #Defining a call back function for the Subcriber.
 def callback():
-    bouteille = sub.pose.pose.position 
+    bouteille = subRobot
     pub.publish(bouteille)
+
 
 rospy.init_node('position_subscriber')
 
 #Souscrit au topic amcl_pose pour avoir la position du robot quand on a une bouteille
-sub = rospy.Subscriber('amcl_pose',PoseWithCovarianceStamps,callback)
+subRobot = rospy.Subscriber('amcl_pose', PoseWithCovarianceStamped,callback)
 
-#Doit ajouter à ça la distance du robot avec la canette
-/camera/depth/image_raw
+#Doit ajouter à ça la distance du robot avec la canette, voir si doit mettre dans la class de l'image
+#subCamera = rospy.Subscriber("/camera/depth/image_raw",Image,self.camera_callback2)
 
 #Publie dans bottle la position du robot
-pub = rospy.Publisher('bottle', PoseWithCovarianceStamps, queue_size=10)
+pub = rospy.Publisher('bottle', PoseWithCovarianceStamped, queue_size=10)
 rate = rospy.Rate(10) # 10hz
 
 rospy.spin()
