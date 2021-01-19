@@ -1,0 +1,6 @@
+<launch>
+    <include file="$(find larm)/launch/challenge-2.launch"/>
+    <include file="$(find turtlebot_teleop)/launch/keyboard_teleop.launch"/>
+    <node pkg="student_package" name="visu" type="visualize.py"/>
+    <node pkg="student_package" name="marker" type="marker.py"/>
+</launch>
