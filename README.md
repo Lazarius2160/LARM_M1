@@ -5,4 +5,4 @@
 puis sur un autre terminal le navigation.launch qui lancera la carte et les noeuds correspondant (pas le téléop car tout se fait via le 2D nav goal*
 *Attention il faut aussi lancer Rviz à la main une fois que tout est lancé*
 
-*Pour le challenge 2 la visualisation SEULE se fera à l'aide du visualisation.launch, un teleop se lancera ainsi que la simulation cependant les bouteille n'apparaitront pas sur la carte. Si il est opérationnel il faudra alors pour valider le challenge 2 lancer le mapping.launch qui permettra alors d'avoir aussi les points sur la carte.*
+*Pour le challenge 2 la visualisation SEULE se fera à l'aide du visualisation.launch, un teleop se lancera ainsi que la simulation cependant les positions des bouteilles n'apparaitront pas encore sur la carte. Si il est opérationnel il faudra alors pour valider le challenge 2 lancer le mapping.launch qui permettra alors d'avoir aussi les points sur la carte.*
