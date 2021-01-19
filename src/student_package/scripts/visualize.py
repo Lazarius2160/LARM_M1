@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from std_msgs.msg import Float32
 from std_msgs.msg import Bool
-from geometry_msgs import PoseWithCovarianceStamps
+#from geometry_msgs import PoseWithCovarianceStamps
 
 class LoadFeature(object):
 
@@ -24,7 +24,7 @@ class LoadFeature(object):
             print(e)
         
         #Publie un geometry_msgs/PoseWithCovarianceStamps pose.pose.position
-        pub = rospy.Publisher('bottle', PoseWithCovarianceStamps, queue_size=10)
+        pub = rospy.Publisher('bottle', Bool, queue_size=10)
         image_1 = cv2.imread('/home/user/catkin_ws/src/student_package/src/scripts/coke_can.jpg',1)
         image_2 = cv_image
 
