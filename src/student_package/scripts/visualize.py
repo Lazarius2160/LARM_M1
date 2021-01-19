@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from std_msgs.msg import Float32
 from std_msgs.msg import Bool
-#from geometry_msgs import PoseWithCovarianceStamps
+#from geometry_msgs import PoseWithCovarianceStamped
 
 class LoadFeature(object):
 
@@ -27,7 +27,8 @@ class LoadFeature(object):
         self.i=self.i+1
         #pub = rospy.Publisher('bottle', Bool, queue_size=10)
         image_2 = cv_image
-        image_1 = cv2.imread('/home/user/catkin_ws/src/student_package/scripts/coke_can5.png')
+        image_1 = cv2.imread('/home/user/catkin_ws/src/student_package/scripts/coke_can6.png')
+
         """cv2.imshow("im", image_1)
         cv2.waitKey(1)
 
@@ -52,7 +53,7 @@ class LoadFeature(object):
         dots = np.copy(image_1)
 
         #Extract the keypoints from both images
-        train_keypoints, train_descriptor = orb.detectAndCompute(gray_1[12:120,13:10], None)
+        train_keypoints, train_descriptor = orb.detectAndCompute(gray_1, None)
         test_keypoints, test_descriptor = orb.detectAndCompute(gray_2, None)
 
         #Draw the found Keypoints of the main image
