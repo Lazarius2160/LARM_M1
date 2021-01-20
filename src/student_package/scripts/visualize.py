@@ -9,40 +9,29 @@ from std_msgs.msg import Float32
 from std_msgs.msg import Bool
 from geometry_msgs.msg import PoseWithCovarianceStamped
 
+
 class LoadFeature(object):
 
     def __init__(self):
         self.image_sub = rospy.Subscriber("/camera/rgb/image_raw",Image,self.camera_callback)
         self.bridge_object = CvBridge()
         self.x = 4
-        self.i=0
 
 
     def camera_callback(self,data):
-     
-        #Defining a call back function for the Subcriber.
-        def callback(msg):
-            bouteille = PoseWithCovarianceStamped()
-            bouteille.pose.pose.position.x = msg.pose.pose.position.x
-            pub.publish(bouteille)
-
+        def callback(data):
+            pubBottle.publish(data)
         try:
             # We select bgr8 because its the OpenCV encoding by default
             cv_image = self.bridge_object.imgmsg_to_cv2(data, desired_encoding="bgr8")
         except CvBridgeError as e:
             print(e)
-        self.i=self.i+1
-        #pub = rospy.Publisher('bottle', Bool, queue_size=10)
-        image_2 = cv_image
-        image_1 = cv2.imread('/home/user/catkin_ws/src/student_package/scripts/coke_can5.png')
-        """cv2.imshow("im", image_1)
-        cv2.waitKey(1)
 
-        if self.i==10:
-            cv2.imshow("im", image_2)
-            cv2.imwrite("coke_can5.png",image_2)
-            cv2.waitKey(1)
-        """
+        #create bottle publisher
+        pubBottle = rospy.Publisher('bottle', PoseWithCovarianceStamped , queue_size=10)
+
+        image_2 = cv_image
+        image_1 = cv2.imread('/home/user/catkin_ws/src/student_package/scripts/coke_can6.png')
         
         gray_1 = cv2.cvtColor(image_1, cv2.COLOR_BGR2GRAY)
         gray_2 = cv2.cvtColor(image_2, cv2.COLOR_BGR2GRAY)
@@ -78,8 +67,8 @@ class LoadFeature(object):
 
         #The matches with shorter distance are the ones we want.
         matches = sorted(matches, key = lambda x : x.distance)
+        
         #Catch some of the matching points to draw
-            
         good_matches = matches[:300] # THIS VALUE IS CHANGED YOU WILL SEE LATER WHY 
         
         #Parse the feature points
@@ -87,7 +76,7 @@ class LoadFeature(object):
         test_points = np.float32([test_keypoints[m.trainIdx].pt for m in good_matches]).reshape(-1,1,2)
 
         #Create a mask to catch the matching points 
-        #With the homo graphy we are trying to find perspectives between two planes
+        #With the homography we are trying to find perspectives between two planes
         #Using the Non-deterministic RANSAC method
         M, mask = cv2.findHomography(train_points, test_points, cv2.RANSAC,5.0)
         if M is not None:
@@ -101,18 +90,11 @@ class LoadFeature(object):
             #Create the perspective in the result 
             dst = cv2.perspectiveTransform(pts,M)
 
-            #Draw the matching lines 
-
             # Draw the points of the new perspective in the result image (This is considered the bounding box)
             result = cv2.polylines(image_2, [np.int32(dst)], True, (50,0,255),3, cv2.LINE_AA)
                    
             #Souscrit au topic amcl_pose pour avoir la position du robot quand on a une bouteille
             subRobot = rospy.Subscriber('amcl_pose', PoseWithCovarianceStamped, callback)
-
-            #Publie dans bottle la position du robot
-            pub = rospy.Publisher('bottle', PoseWithCovarianceStamped, queue_size=10)
-
-            #subCamera = rospy.Subscriber("/camera/depth/image_raw",Image,self.camera_callback2)
 
         cv2.imshow('Points',preview_1)
         cv2.imshow('Detection',image_2)       
@@ -124,7 +106,6 @@ def main():
 
     load_feature_object = LoadFeature()
     rospy.init_node('load_feature_node', anonymous=True)
-
     rate = rospy.Rate(10) # 10hz
     try:
         rospy.spin()
