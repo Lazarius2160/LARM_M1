@@ -4,7 +4,6 @@ bouteilles qu'il croise avec leurs positions, donc pas besoin de move_base-->
 <launch>
 
     <!--Lance la simulation et le déplacement du robot-->
-    <include file="$(find larm)/launch/challenge-2.launch"/>
     <include file="$(find turtlebot_teleop)/launch/keyboard_teleop.launch"/>
 
     <!--Lance le mapping process en même temps que l'on avance, on ouvre rviz à part-->

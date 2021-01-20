@@ -107,7 +107,7 @@ class LoadFeature(object):
             result = cv2.polylines(image_2, [np.int32(dst)], True, (50,0,255),3, cv2.LINE_AA)
                    
             #Souscrit au topic amcl_pose pour avoir la position du robot quand on a une bouteille
-            subRobot = rospy.Subscriber('amcl_pose', PoseWithCovarianceStamped,callback)
+            subRobot = rospy.Subscriber('amcl_pose', PoseWithCovarianceStamped, callback)
 
             #Publie dans bottle la position du robot
             pub = rospy.Publisher('bottle', PoseWithCovarianceStamped, queue_size=10)
