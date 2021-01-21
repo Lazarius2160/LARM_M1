@@ -14,25 +14,20 @@ from nav_msgs.msg import Odometry
 
 class LoadFeature(object):
 
+
     def __init__(self):
         self.image_sub = rospy.Subscriber("/camera/rgb/image_raw",Image,self.camera_callback)
         self.bridge_object = CvBridge()
         self.x = 4
+        #create bottle publisher
+        self.pubBottle = rospy.Publisher('bottle', Odometry , queue_size=10)
+        #Souscrit au topic odom pour avoir la position du robot quand on a une bouteille
+        self.subRobot = rospy.Subscriber('odom', Odometry, self.callback)   
 
+    def callback(self, data):
+        self.pubBottle.publish(data)
 
     def camera_callback(self,data):
-
-        #create bottle publisher
-        pubBottle = rospy.Publisher('bottle', Odometry , queue_size=10)
-
-        def callback(data):
-
-            coord = Odometry()
-            coord.pose.pose.position.x = data.pose.pose.position.x
-            coord.pose.pose.position.y = data.pose.pose.position.y
-            coord.pose.pose.position.z = data.pose.pose.position.z
-            pubBottle.publish(coord)
-            print coord
 
         try:
             # We select bgr8 because its the OpenCV encoding by default
@@ -101,11 +96,7 @@ class LoadFeature(object):
             dst = cv2.perspectiveTransform(pts,M)
 
             # Draw the points of the new perspective in the result image (This is considered the bounding box)
-            result = cv2.polylines(image_2, [np.int32(dst)], True, (50,0,255),3, cv2.LINE_AA)
-
-            #Souscrit au topic amcl_pose pour avoir la position du robot quand on a une bouteille
-            #subRobot = rospy.Subscriber('amcl_pose', PoseWithCovarianceStamped, callback)
-            subRobot = rospy.Subscriber('odom', Odometry, callback)       
+            result = cv2.polylines(image_2, [np.int32(dst)], True, (50,0,255),3, cv2.LINE_AA)    
         
         cv2.imshow('Points',preview_1)
         cv2.imshow('Detection',image_2)       
@@ -115,8 +106,8 @@ class LoadFeature(object):
     
 def main():
 
-    load_feature_object = LoadFeature()
     rospy.init_node('load_feature_node', anonymous=True) 
+    load_feature_object = LoadFeature()
     rate = rospy.Rate(10) # 10hz
     try:
         rospy.spin()
