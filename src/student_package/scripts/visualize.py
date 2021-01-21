@@ -8,7 +8,9 @@ import matplotlib.pyplot as plt
 from std_msgs.msg import Float32
 from std_msgs.msg import Bool
 from nav_msgs.msg import Odometry
-
+from geometry_msgs.msg import Pose
+# importer le message pour le marker
+from visualization_msgs.msg import Marker
 
 
 class LoadFeature(object):
@@ -18,13 +20,27 @@ class LoadFeature(object):
         self.image_sub = rospy.Subscriber("/camera/rgb/image_raw",Image,self.camera_callback)
         self.bridge_object = CvBridge()
         self.x = 4
-        #create bottle publisher
-        self.pubBottle = rospy.Publisher('bottle', Odometry , queue_size=10)
+        #Publie dans le topic bottle la position du robot
+        self.pubBottle = rospy.Publisher('bottle', Pose , queue_size=10)
         #Souscrit au topic odom pour avoir la position du robot quand on a une bouteille
         self.subRobot = rospy.Subscriber('odom', Odometry, self.callback)   
+        self.found = False
+        #Publie sur le topic visualization_marker_array, pour l'instant sans array car plus simple
+        self.mapBottle = rospy.Publisher('visualization_marker', Marker, queue_size=10)
 
     def callback(self, data):
-        self.pubBottle.publish(data)
+        if self.found : 
+            bouteille = Pose()
+            bouteille.position.x = data.pose.pose.position.x
+            bouteille.position.y = data.pose.pose.position.y
+            bouteille.position.z = data.pose.pose.position.z
+            self.pubBottle.publish(bouteille)
+            #Envoie tout les points dans un fichier yaml qui s'ouvre par dessus la map ou publie dans map ?
+            position = Marker()
+            position.pose.position.x=data.pose.pose.position.x
+            position.pose.position.y=data.pose.pose.position.y
+            position.pose.position.z=data.pose.pose.position.z
+            self.mapBottle.publish(position)
 
     def camera_callback(self,data):
 
@@ -41,7 +57,7 @@ class LoadFeature(object):
         gray_2 = cv2.cvtColor(image_2, cv2.COLOR_BGR2GRAY)
 
         #Initialize the ORB Feature detector 
-        orb = cv2.ORB_create(nfeatures = 1000)
+        orb = cv2.ORB_create(nfeatures = 1000) 
 
         #Make a copy of th eoriginal image to display the keypoints found by ORB
         #This is just a representative
@@ -73,7 +89,7 @@ class LoadFeature(object):
         matches = sorted(matches, key = lambda x : x.distance)
         
         #Catch some of the matching points to draw
-        good_matches = matches[:300] # THIS VALUE IS CHANGED YOU WILL SEE LATER WHY 
+        good_matches = matches[:700] # THIS VALUE IS CHANGED YOU WILL SEE LATER WHY , avant 300
         
         #Parse the feature points
         train_points = np.float32([train_keypoints[m.queryIdx].pt for m in good_matches]).reshape(-1,1,2)
@@ -96,7 +112,9 @@ class LoadFeature(object):
 
             # Draw the points of the new perspective in the result image (This is considered the bounding box)
             result = cv2.polylines(image_2, [np.int32(dst)], True, (50,0,255),3, cv2.LINE_AA)    
-        
+
+            self.found = True
+
         cv2.imshow('Points',preview_1)
         cv2.imshow('Detection',image_2)       
         cv2.waitKey(1)
