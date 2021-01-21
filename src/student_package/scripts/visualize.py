@@ -9,6 +9,8 @@ from std_msgs.msg import Float32
 from std_msgs.msg import Bool
 from geometry_msgs.msg import PoseWithCovarianceStamped
 
+def callback(data):
+    pubBottle.publish(data)
 
 class LoadFeature(object):
 
@@ -19,8 +21,7 @@ class LoadFeature(object):
 
 
     def camera_callback(self,data):
-        def callback(data):
-            pubBottle.publish(data)
+        
         try:
             # We select bgr8 because its the OpenCV encoding by default
             cv_image = self.bridge_object.imgmsg_to_cv2(data, desired_encoding="bgr8")
@@ -92,9 +93,11 @@ class LoadFeature(object):
 
             # Draw the points of the new perspective in the result image (This is considered the bounding box)
             result = cv2.polylines(image_2, [np.int32(dst)], True, (50,0,255),3, cv2.LINE_AA)
-                   
+            
             #Souscrit au topic amcl_pose pour avoir la position du robot quand on a une bouteille
             subRobot = rospy.Subscriber('amcl_pose', PoseWithCovarianceStamped, callback)
+                   
+            
 
         cv2.imshow('Points',preview_1)
         cv2.imshow('Detection',image_2)       
