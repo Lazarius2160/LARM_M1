@@ -7,7 +7,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from std_msgs.msg import Float32
 from std_msgs.msg import Bool
-from geometry_msgs.msg import PoseWithCovarianceStamped
+from nav_msgs.msg import Odometry
+
+
 
 def callback(data):
     pubBottle.publish(data)
@@ -27,9 +29,6 @@ class LoadFeature(object):
             cv_image = self.bridge_object.imgmsg_to_cv2(data, desired_encoding="bgr8")
         except CvBridgeError as e:
             print(e)
-
-        #create bottle publisher
-        pubBottle = rospy.Publisher('bottle', PoseWithCovarianceStamped , queue_size=10)
 
         image_2 = cv_image
         image_1 = cv2.imread('/home/user/catkin_ws/src/student_package/scripts/coke_can6.png')
@@ -93,12 +92,11 @@ class LoadFeature(object):
 
             # Draw the points of the new perspective in the result image (This is considered the bounding box)
             result = cv2.polylines(image_2, [np.int32(dst)], True, (50,0,255),3, cv2.LINE_AA)
-            
-            #Souscrit au topic amcl_pose pour avoir la position du robot quand on a une bouteille
-            subRobot = rospy.Subscriber('amcl_pose', PoseWithCovarianceStamped, callback)
-                   
-            
 
+            #Souscrit au topic amcl_pose pour avoir la position du robot quand on a une bouteille
+            #subRobot = rospy.Subscriber('amcl_pose', PoseWithCovarianceStamped, callback)
+            subRobot = rospy.Subscriber('odom', Odometry, callback)       
+        
         cv2.imshow('Points',preview_1)
         cv2.imshow('Detection',image_2)       
         cv2.waitKey(1)
@@ -108,7 +106,7 @@ class LoadFeature(object):
 def main():
 
     load_feature_object = LoadFeature()
-    rospy.init_node('load_feature_node', anonymous=True)
+    rospy.init_node('load_feature_node', anonymous=True) 
     rate = rospy.Rate(10) # 10hz
     try:
         rospy.spin()
