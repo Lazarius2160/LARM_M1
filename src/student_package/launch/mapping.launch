@@ -14,11 +14,9 @@ bouteilles qu'il croise avec leurs positions, donc pas besoin de move_base-->
     </node>
 
     <!--- Lance AMCL pour avoir la localisation du robot et donc
-      de la canette-->
+      de la canette>
     <node pkg="amcl" type="amcl" name="amcl" output="screen">
-     <remap from="scan" to="/scan" />
-     <remap from="cmd_vel" to="/cmd_vel"/>
-    </node>
+    </node-->
 
     <!--Lance la visualisation-->
     <node pkg="student_package" name="visu" type="visualize.py"/>
