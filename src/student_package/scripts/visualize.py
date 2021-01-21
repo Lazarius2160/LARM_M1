@@ -11,6 +11,8 @@ from nav_msgs.msg import Odometry
 
 
 
+def callback(data):
+    pubBottle.publish(data)
 
 class LoadFeature(object):
 
