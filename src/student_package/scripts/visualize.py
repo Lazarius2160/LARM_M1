@@ -53,7 +53,7 @@ class LoadFeature(object):
         gray_2 = cv2.cvtColor(image_2, cv2.COLOR_BGR2GRAY)
 
         #Initialize the ORB Feature detector 
-        orb = cv2.ORB_create(nfeatures = 3000) 
+        orb = cv2.ORB_create(nfeatures = 1000) 
 
         #Make a copy of th eoriginal image to display the keypoints found by ORB
         #This is just a representative
@@ -85,7 +85,7 @@ class LoadFeature(object):
         matches = sorted(matches, key = lambda x : x.distance)
         
         #Catch some of the matching points to draw
-        good_matches = matches[:100] # THIS VALUE IS CHANGED YOU WILL SEE LATER WHY , avant 300
+        good_matches = matches[:500] # THIS VALUE IS CHANGED YOU WILL SEE LATER WHY , avant 300
         
         #Parse the feature points
         train_points = np.float32([train_keypoints[m.queryIdx].pt for m in good_matches]).reshape(-1,1,2)
