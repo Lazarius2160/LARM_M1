@@ -1,5 +1,3 @@
-<!--On fait bouger le robot d'un point A à un point B à la main, sur le chemin il note d'un point sur la map toutes les 
-bouteilles qu'il croise avec leurs positions, donc pas besoin de move_base-->
 
 <launch>
 
@@ -12,11 +10,6 @@ bouteilles qu'il croise avec leurs positions, donc pas besoin de move_base-->
      <param name="base_frame" value="base_footprint"/>   
      <param name="odom_frame" value="odom"/>   
     </node>
-
-    <!--- Lance AMCL pour avoir la localisation du robot et donc
-      de la canette>
-    <node pkg="amcl" type="amcl" name="amcl" output="screen">
-    </node-->
 
     <!--Lance la visualisation-->
     <node pkg="student_package" name="visu" type="visualize.py"/>

@@ -8,9 +8,7 @@ import matplotlib.pyplot as plt
 from std_msgs.msg import Float32
 from std_msgs.msg import Bool
 from nav_msgs.msg import Odometry
-from geometry_msgs.msg import Pose
-# importer le message pour le marker
-from visualization_msgs.msg import Marker
+from geometry_msgs.msg import PoseStamped
 
 
 class LoadFeature(object):
@@ -21,26 +19,24 @@ class LoadFeature(object):
         self.bridge_object = CvBridge()
         self.x = 4
         #Publie dans le topic bottle la position du robot
-        self.pubBottle = rospy.Publisher('bottle', Pose , queue_size=10)
+        self.pubBottle = rospy.Publisher('bottle', PoseStamped , queue_size=10)
         #Souscrit au topic odom pour avoir la position du robot quand on a une bouteille
         self.subRobot = rospy.Subscriber('odom', Odometry, self.callback)   
+        #Variable qui definit si la bouteille est trouvee ou non
         self.found = False
-        #Publie sur le topic visualization_marker_array, pour l'instant sans array car plus simple
-        self.mapBottle = rospy.Publisher('visualization_marker', Marker, queue_size=10)
+
 
     def callback(self, data):
+
         if self.found : 
-            bouteille = Pose()
-            bouteille.position.x = data.pose.pose.position.x
-            bouteille.position.y = data.pose.pose.position.y
-            bouteille.position.z = data.pose.pose.position.z
+            bouteille = PoseStamped()
+            bouteille.header.frame_id = 'odom'
+            bouteille.pose.position.x = data.pose.pose.position.x
+            bouteille.pose.position.y = data.pose.pose.position.y
+            bouteille.pose.position.z = data.pose.pose.position.z
             self.pubBottle.publish(bouteille)
-            #Envoie tout les points dans un fichier yaml qui s'ouvre par dessus la map ou publie dans map ?
-            position = Marker()
-            position.pose.position.x=data.pose.pose.position.x
-            position.pose.position.y=data.pose.pose.position.y
-            position.pose.position.z=data.pose.pose.position.z
-            self.mapBottle.publish(position)
+            self.found=False
+            
 
     def camera_callback(self,data):
 
@@ -57,7 +53,7 @@ class LoadFeature(object):
         gray_2 = cv2.cvtColor(image_2, cv2.COLOR_BGR2GRAY)
 
         #Initialize the ORB Feature detector 
-        orb = cv2.ORB_create(nfeatures = 1000) 
+        orb = cv2.ORB_create(nfeatures = 3000) 
 
         #Make a copy of th eoriginal image to display the keypoints found by ORB
         #This is just a representative
@@ -89,7 +85,7 @@ class LoadFeature(object):
         matches = sorted(matches, key = lambda x : x.distance)
         
         #Catch some of the matching points to draw
-        good_matches = matches[:700] # THIS VALUE IS CHANGED YOU WILL SEE LATER WHY , avant 300
+        good_matches = matches[:100] # THIS VALUE IS CHANGED YOU WILL SEE LATER WHY , avant 300
         
         #Parse the feature points
         train_points = np.float32([train_keypoints[m.queryIdx].pt for m in good_matches]).reshape(-1,1,2)
