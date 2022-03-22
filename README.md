@@ -1,7 +1,10 @@
-# GRP12LARM
-*Binôme 12 pour le projet TurtleBot de LARM 2020/2021 avec Marine C et Maya D*
-
-Pour le challenge 1 :
+# LARM course M1 IMT
+These two challenges (code challenge 1 and 2) are aimed at:  
+- controlling a robot to go localize itself and go to a pose destination by itself or be moved by an operator,  
+- controlling a robot in an unknown area and make it look for Coke Cans while marking down their locations.
+  
+### Rendu:
+Pour le challenge 1:
 - lancer la simulation avec roslaunch larm challenge-1.launch 
 - lancer dans un second terminal le navigation.launch
 - lancer dans un dernier terminal rosrun rviz rviz, nous avons sauvegarder notre configuration, elle est composée de :
